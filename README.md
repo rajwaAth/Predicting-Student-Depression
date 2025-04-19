@@ -252,8 +252,6 @@ ROC AUC mengukur kemampuan model dalam membedakan antara kelas positif (depresi)
 Dengan skor **F1: 0.87** dan **ROC AUC: 0.92**, model yang dibangun terbukti efektif dalam mengidentifikasi risiko depresi secara akurat dan andal. Hal ini menunjukkan bahwa pendekatan machine learning dapat menjadi solusi prediktif yang mendukung upaya deteksi dini gangguan mental pada kalangan pelajar, sehingga memungkinkan intervensi lebih cepat dan tepat sasaran.
 
 ## Feature Importance & Business Insight
-**Latar Belakang:** 
-
 <img src="image/feature_importance.png" align="center"><br>
 
 Gangguan mental seperti depresi meningkat di kalangan pelajar dan mahasiswa. Pendekatan konvensional kurang efektif, sehingga dibutuhkan solusi prediktif berbasis teknologi.
