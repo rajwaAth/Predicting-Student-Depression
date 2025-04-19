@@ -108,7 +108,7 @@ Selain itu terdapat pula kolom `Financial Stress` yang bertipe data **object** y
     
 - Umur Terhadap Tingkat Depresi Pelajar
     <br>
-    <image src='iamge/umur.png' width= 500/>
+    <image src='image/umur.png' width= 500/>
     <br> 
     Grafik menunjukkan bahwa customer dengan status depresi cenderung berusia lebih muda, dengan rata-rata usia 24 tahun, dibandingkan yang tidak depresi dengan rata-rata 27tahun. Hal ini mengindikasikan bahwa depresi lebih banyak dialami oleh kelompok usia muda.
 
@@ -237,9 +237,7 @@ Untuk mengevaluasi kinerja model dalam mendeteksi risiko depresi pada mahasiswa,
 
 F1 Score merupakan metrik yang menggabungkan **Precision** dan **Recall** dalam satu nilai harmonis. Rumusnya adalah:
 
-\[
-\text{F1 Score} = 2 \times \frac{\text{Precision} \times \text{Recall}}{\text{Precision} + \text{Recall}}
-\]
+![F1 Score](image/f1score_image.png)
 
 Metrik ini sangat cocok digunakan ketika keseimbangan antara False Positive dan False Negative penting untuk dipertahankan, seperti dalam kasus prediksi depresi. Nilai F1 Score sebesar **0.87** menunjukkan bahwa model mampu menjaga keseimbangan yang baik antara presisi dalam mendeteksi depresi dan sensitivitas dalam menjangkau kasus yang benar-benar positif.
 
