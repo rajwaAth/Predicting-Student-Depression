@@ -131,12 +131,12 @@ Pada tahap ini kita akan melakukan proses transformasi pada data sehingga menjad
 ### Menangani Missing Values
 Pada tahap ini dikarenakan missing value hanya terdapat 3 value pada kolom `Financial Stress` maka kita akan menghapus kolom tersebut. Karena hanya terdapat 3 value pada kolom tersebut maka kita akan menghapus kolom tersebut, dikarenakan agar menjaga keaslian data.
 
-<img src='image/null_value.png' ,align="center"><br>
+<img src='image/null_value.png' align="center"><br>
 
 ### Menghapus Outlier Values
 Untuk menangani outlier, kali ini akan dilakukan penghapusan outlier pada kolom `Age` dan `CGPA` menggunakan metode IQR. Metode ini digunakan untuk menghilangkan nilai-nilai yang berada di luar batas bawah dan batas atas yang ditentukan, sehingga data menjadi lebih bersih dan representatif.
 
-<img src='image/outlier.png' ,align="center"><br>
+<img src='image/outlier.png' align="center"><br>
 
 ### Encoding Fitur Kategori
 Pada bagian ini, karena dataset fitur kategori kita sebelumnya sudah diubah dalam bentuk objek (string) pada tahap eksplorasi data analis maka kita perlu mengubah data kategori (yang berbentuk teks atau label) menjadi format numerik agar dapat diproses oleh algoritma machine learning. Encoding Fitur Kategorikal dilakukan 2 bagian, yakni:
@@ -147,28 +147,28 @@ Pada bagian ini, karena dataset fitur kategori kita sebelumnya sudah diubah dala
     `Sleep Duration`, `Dietary Habits`, `Degree`
 Hasil setelah dilakukan data preprocessing dapat dilihat pada gambar berikut:
 
-<img src="image/encoding.png" ,align="center"><br>
+<img src="image/encoding.png" align="center"><br>
 
 ### Train-Test-Split
 Membagi data dengan proporsi 80:20. Dengan 80% digunakan untuk training model dan 20% digunakan untuk testing model.
 
-<img src="image/spliting_data.png" ,align="center"><br>
+<img src="image/spliting_data.png" align="center"><br>
 
 ### Transformasi Fitur
 Melakukan scaling value dengam MinMaxScaler untuk menyamaratakan scalar dari setiap fitur.
 
-<img src="image/transformation_data.png" ,align="center"><br>
+<img src="image/transformation_data.png" align="center"><br>
 
 ### Balancing Data
 SMOTE digunakan untuk mengatasi ketidakseimbangan kelas pada data latih. Pengujian juga dilakukan pada data tanpa SMOTE untuk membandingkan akurasi dan menilai efektivitas metode tersebut.
 
-<img src="image/imbalance_data.png" ,align="center"><br>
+<img src="image/imbalance_data.png" align="center"><br>
 
 ## Modeling
 Pada tahap awal dilakukannya pengetesan untuk mencari algoritma yang terbaik tanpa melakukan hyperparameter tuning terlebih dahulu dan di tes pada data smote dan tidak smote.
 
-<img src="image/modeling_smote.png" ,align="center"><br>
-<img src="image/modeling_not_smote.png" ,align="center"><br>
+<img src="image/modeling_smote.png" align="center"><br>
+<img src="image/modeling_not_smote.png" align="center"><br>
 
 Dari kedua hasil tersebut, dapat dilihat bahwa model dengan SMOTE dan tanpa SMOTE memiliki akurasi yang sama. Oleh karena itu, digunakan model tanpa SMOTE karena data yang digunakan lebih orisinal dan merepresentasikan kondisi sebenarnya. Selanjutnya akan fokus terhadap 2 model algoritma yaitu Logistic regression dan XGBoost. Kedua model tersebut memiliki akurasi yang paling baik dengan F1 score sebesar 0.87 pada Logistic Regression dan 0.86 pada XGBoost.
 
@@ -228,7 +228,7 @@ Dari kedua model tersebut XGBoost memiliki performa yang lebih baik, dengan skor
 **`roc_auc`: 0.92**
 
 dan memiliki confusion matrix sebagai berikut:
-<img src="image/confusion_XG.png" ,align="center"><br>
+<img src="image/confusion_XG.png" align="center"><br>
 
 ## Evaluation
 Untuk mengevaluasi kinerja model dalam mendeteksi risiko depresi pada mahasiswa, digunakan dua metrik utama, yaitu **F1 Score** dan **ROC AUC**. Pemilihan metrik ini disesuaikan dengan konteks permasalahan yang bersifat **kelas tidak seimbang** dan memiliki dampak serius jika terjadi kesalahan klasifikasi, khususnya dalam mengidentifikasi individu yang mengalami depresi.
@@ -254,7 +254,7 @@ Dengan skor **F1: 0.87** dan **ROC AUC: 0.92**, model yang dibangun terbukti efe
 ## Feature Importance & Business Insight
 **Latar Belakang:** 
 
-<img src="image/feature_importance.png" ,align="center"><br>
+<img src="image/feature_importance.png" align="center"><br>
 
 Gangguan mental seperti depresi meningkat di kalangan pelajar dan mahasiswa. Pendekatan konvensional kurang efektif, sehingga dibutuhkan solusi prediktif berbasis teknologi.
 
