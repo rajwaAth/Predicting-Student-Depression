@@ -8,7 +8,19 @@ Original file is located at
 
 # Predicting Student Depression
 
+**Submission 1 - Machine Learning Terapan**
+
+Nama: Muhamad Rajwa Athoriq
+
 dataset: https://www.kaggle.com/datasets/adilshamim8/student-depression-dataset
+
+## Latar Belakang
+
+Kesehatan mental merupakan aspek penting dalam mendukung keberhasilan akademik dan kehidupan sosial siswa maupun mahasiswa. Dalam beberapa tahun terakhir, terdapat peningkatan signifikan terhadap kasus gangguan mental, khususnya depresi, di kalangan pelajar. Organisasi Kesehatan Dunia (WHO) melaporkan bahwa lebih dari 264 juta orang di dunia menderita depresi, dan sebagian besar kasus dimulai pada usia remaja dan dewasa muda – usia yang identik dengan masa sekolah dan kuliah (World Health Organization, 2020).
+
+Dalam konteks pendidikan tinggi, tekanan akademik, ekspektasi sosial, kesepian, gaya hidup yang tidak seimbang, dan masalah finansial merupakan pemicu utama gangguan psikologis. Menurut sebuah studi oleh American College Health Association (2021), lebih dari 40% mahasiswa di Amerika Serikat melaporkan mengalami gejala depresi dalam satu tahun terakhir. Hal serupa juga terjadi di Indonesia, sebagaimana diungkapkan oleh Kementerian Kesehatan RI, bahwa sekitar 6,1% remaja usia 15–24 tahun mengalami gangguan mental emosional, dan angka ini cenderung meningkat setiap tahunnya (Riskesdas, 2018).
+
+Meningkatnya prevalensi depresi pada pelajar menuntut adanya solusi berbasis teknologi untuk mengidentifikasi risiko secara dini. Namun, pendekatan konvensional seperti konseling tatap muka atau survei manual sering kali bersifat reaktif, tidak efisien, dan sulit menjangkau semua siswa secara merata. Oleh karena itu, diperlukan pendekatan yang lebih sistematis dan prediktif dengan memanfaatkan machine learning dan analitik data.
 
 # Importing Library
 """
@@ -43,12 +55,26 @@ df_decs
 """Kolom `CustomerID` hanya berisi nilai unik untuk setiap pelanggan dan **tidak memberikan kontribusi prediktif**, sehingga kolom ini akan **dihapus dari analisis**.
 
 Selain itu terdapat pula kolom `Financial Stress` yang bertipe data **object** yang seharusnya bertipe data **float**, sehingga perlu dilakukan konversi tipe data sebelum analisis lebih lanjut.
+
+#### Menghapus Kolom yang Tidak diperlukan & Merubah Tipe Data
 """
 
+# menghapus kolom id dan mengubah tipe data pada kolom financial stress
 df = df.drop('id', axis=1)
 df['Financial Stress'] = pd.to_numeric(df['Financial Stress'], errors='coerce')
 
-"""# Exploratory Data Analysis
+# lakukan deskripsi data ulang
+ListofDecs = []
+
+for i in df.columns:
+  ListofDecs.append([i, df[i].dtype, df.shape[0], df[i].isna().sum(), round((df[i].isna().sum()/df.shape[0])*100, 2), df[i].nunique(), df[i].unique()[:5]])
+
+df_decs = pd.DataFrame(ListofDecs, columns=['column', 'type', 'total row', 'null', 'percentage null', 'number of unique value', 'sample unique value'])
+df_decs
+
+"""Setelah dilakukan perubahan tipe data pada kolom `Financial Stress`, ditemukan 3 nilai null pada kolom tersebut. Oleh karena itu, baris yang mengandung nilai null akan dihapus untuk menjaga keaslian data.
+
+# Exploratory Data Analysis
 
 ## Univariate Analysis
 """
@@ -142,6 +168,9 @@ plt.tight_layout()
 plt.title('Correlation Between Feature Numeric', weight='bold')
 plt.show()
 
+"""Apabila dilihat berdasarkan korelasi antara feature numerik yang dimiliki, pada dataset ini tidak terdapat feature redundant"""
+
+# Menghapus kolom & nilai yang tidak diperlukan
 df.drop(['City', 'Profession', 'Job Satisfaction', 'Work Pressure'], axis=1, inplace=True)
 
 df = df[~((df['Sleep Duration'] == 'Others') |
@@ -151,11 +180,9 @@ df = df[~((df['Sleep Duration'] == 'Others') |
 
 df.shape
 
-"""Apabila dilihat berdasarkan korelasi antara feature numerik yang dimiliki, pada dataset ini tidak terdapat feature redundant
+"""## Multivariate Analysis"""
 
-# Multivariate Analysis
-"""
-
+# membuat function untuk melakukan visualisasi persentase setiap values
 def plot_distribution_percentage_category(col, orient):
 
   def percentage_feature(col):
@@ -175,7 +202,7 @@ def plot_distribution_percentage_category(col, orient):
                     xy=(width / 2, p.get_y() + p.get_height() / 2),
                     ha='center', va='center', color='white', fontsize=10, fontweight='bold')
 
-    plt.xlabel('Percentage by Total Customers', fontsize=12)
+    plt.xlabel('Percentage by Total Person', fontsize=12)
 
   else:
     plt.figure(figsize=(12, 8))
@@ -186,7 +213,7 @@ def plot_distribution_percentage_category(col, orient):
                   xy=(p.get_x() + p.get_width() / 2, height/2),
                   ha='center', va='bottom', fontsize=10, color='white', fontweight='bold')
 
-    plt.ylabel('Percentage by Total Customers', fontsize=12)
+    plt.ylabel('Percentage by Total Person', fontsize=12)
 
   plt.title(f"Percentage of Overall {col} Distribution", fontsize=14, fontweight='bold')
   plt.legend(title='Depression', fontsize=10, title_fontsize=12)
@@ -194,17 +221,30 @@ def plot_distribution_percentage_category(col, orient):
 
 plot_distribution_percentage_category('Gender', 'v')
 
+"""Berdasarkan kategori **Gender**, tingkat kemungkinan mengalami depresi antara laki-laki dan perempuan menunjukkan persentase yang hampir sama, yaitu ***masing-masing sebesar 58%***.
+
+Hal ini dapat dilihat pada diagram di bawah, yang memperlihatkan distribusi persentase depresi berdasarkan gender.
+"""
+
 plot_distribution_percentage_category('Sleep Duration', 'h')
+
+"""Grafik menunjukkan bahwa semakin pendek durasi tidur, semakin tinggi persentase individu yang mengalami depresi, dengan angka tertinggi pada kelompok tidur kurang dari 5 jam (64,54%). Meskipun proporsi depresi menurun seiring bertambahnya durasi tidur, tidur lebih dari 8 jam tidak menunjukkan perbedaan signifikan. Ini menunjukkan bahwa durasi tidur berpengaruh terhadap depresi, namun bukan satu-satunya faktor."""
 
 plot_distribution_percentage_category('Dietary Habits', 'v')
 
-plot_distribution_percentage_category('Degree', 'h')
+"""Grafik menunjukkan bahwa individu dengan pola makan tidak sehat memiliki persentase depresi tertinggi (70,75%), sedangkan pada pola makan sehat, persentase depresi lebih rendah (45,37%). Hal ini menunjukkan bahwa semakin baik pola makan seseorang, semakin rendah kecenderungan mengalami depresi."""
 
 plot_distribution_percentage_category('Have you ever had suicidal thoughts ?', 'v')
 
+"""Pemikiran untuk bunuh diri merupakan tanda serius gangguan mental, terutama depresi. Data menunjukkan bahwa 79% dari mereka yang pernah memiliki pikiran tersebut mengalami depresi, jauh lebih tinggi dibandingkan 23% pada mereka yang tidak pernah berpikiran demikian. Ini menegaskan kuatnya kaitan antara pikiran bunuh diri dan depresi."""
+
 plot_distribution_percentage_category('Academic Pressure', 'v')
 
+"""Grafik menunjukkan bahwa semakin tinggi tingkat tekanan akademik, semakin besar persentase individu yang mengalami depresi. Pada tingkat tekanan tertinggi (skor 5), sebanyak **86,06%** mengalami depresi, sedangkan pada tingkat tekanan terendah (skor 1), hanya **19,39%** yang mengalami depresi. Hal ini mengindikasikan bahwa tekanan akademik yang tinggi memiliki kaitan kuat dengan meningkatnya risiko depresi."""
+
 plot_distribution_percentage_category('Financial Stress', 'h')
+
+"""Diagram ini menunjukkan tren penurunan persentase stres finansial pelajar seiring naiknya kategori (1.0-5.0). Pada kategori tertinggi (1.0), 68,13% pelajar mengalami stres finansial, namun angka ini turun drastis menjadi hanya 18,72% di kategori terendah (5.0). Sebaliknya, persentase pelajar tanpa stres finansial meningkat dari 31,87% (kategori 1.0) menjadi 81,28% (kategori 5.0), menunjukkan bahwa kategori lebih tinggi berkorelasi dengan stabilitas keuangan yang lebih baik. Data "Percentage by Total Customers" tidak tersedia untuk analisis lebih lanjut."""
 
 def plot_distribution_numeric(data, col):
   plt.figure(figsize=(10,6))
@@ -215,34 +255,48 @@ def plot_distribution_numeric(data, col):
   mean_not_Depression = data[data['Depression'] == 0][col].mean()
 
   plt.axvline(mean_all, color='#28B463', linestyle='dashed', label=f'Rata-rata keseluruhan {mean_all:.2f}')
-  plt.axvline(mean_Depression, color='#2E86C1', linestyle='dotted', label=f'Rata-rata customer Depression {mean_Depression:.2f}')
-  plt.axvline(mean_not_Depression, color='#FF5733', linestyle='solid', label=f'Rata-rata customer tidak Depression {mean_not_Depression:.2f}')
+  plt.axvline(mean_Depression, color='#2E86C1', linestyle='dotted', label=f'Rata-rata Pelajar Depression {mean_Depression:.2f}')
+  plt.axvline(mean_not_Depression, color='#FF5733', linestyle='solid', label=f'Rata-rata Pelajar tidak Depression {mean_not_Depression:.2f}')
 
   plt.text(mean_all, plt.ylim()[1]*0.9, color='#28B463', s=f'Rata-rata keseluruhan\n{mean_all:.2f}', ha='left', fontsize=10, bbox=dict(facecolor='white', alpha=0.6))
-  plt.text(mean_Depression, plt.ylim()[1]*0.8, color='#2E86C1', s=f'Rata-rata customer Depression\n{mean_Depression:.2f}', ha='left', fontsize=10, bbox=dict(facecolor='white', alpha=0.6))
-  plt.text(mean_not_Depression, plt.ylim()[1]*0.7, color='#FF5733', s=f'Rata-rata customer tidak Depression\n{mean_not_Depression:.2f}', ha='left', fontsize=10, bbox=dict(facecolor='white', alpha=0.6))
+  plt.text(mean_Depression, plt.ylim()[1]*0.8, color='#2E86C1', s=f'Rata-rata Pelajar Depression\n{mean_Depression:.2f}', ha='left', fontsize=10, bbox=dict(facecolor='white', alpha=0.6))
+  plt.text(mean_not_Depression, plt.ylim()[1]*0.7, color='#FF5733', s=f'Rata-rata Pelajar tidak Depression\n{mean_not_Depression:.2f}', ha='left', fontsize=10, bbox=dict(facecolor='white', alpha=0.6))
 
-  plt.title(f'Distribusi {col} Berdasarkan Status Depression Customer', fontsize=14)
+  plt.title(f'Distribusi {col} Berdasarkan Status Depression Pelajar', fontsize=14)
   plt.xlabel(f'{col}', fontsize=12)
-  plt.ylabel('Jumlah Customer', fontsize=12)
+  plt.ylabel('Total Pelajar', fontsize=12)
   plt.tight_layout()
   plt.show()
 
 plot_distribution_numeric(df, 'Age')
 
+"""Grafik menunjukkan bahwa customer dengan status depresi cenderung berusia lebih muda, dengan rata-rata usia 24 tahun, dibandingkan yang tidak depresi dengan rata-rata 27tahun. Hal ini mengindikasikan bahwa depresi lebih banyak dialami oleh kelompok usia muda."""
+
 plot_distribution_numeric(df, 'CGPA')
+
+"""Perbandingan CGPA antara pelajar yang mengalami depresi dan yang tidak menunjukkan tidak adanya perbedaan signifikan, dengan keduanya memiliki rata-rata sekitar 7,6. Hal ini mengindikasikan bahwa meskipun mengalami tekanan psikologis, pelajar dengan depresi tetap mampu menjaga performa akademiknya. Namun, kestabilan nilai ini tidak serta-merta mencerminkan kondisi mental yang sehat, melainkan bisa menjadi tanda bahwa mereka menekan emosinya demi mempertahankan pencapaian."""
 
 plot_distribution_numeric(df, 'Study Satisfaction')
 
+"""Rata-rata kepuasan studi secara keseluruhan adalah 2.94, sedangkan pelajar tanpa depresi (0) memiliki rata-rata 2.75 dan pelajar dengan depresi (1) memiliki rata-rata lebih tinggi, yaitu 3.21. Data menunjukkan bahwa pelajar dengan depresi cenderung melaporkan tingkat kepuasan studi yang sedikit lebih tinggi dibandingkan pelajar tanpa depresi."""
+
 plot_distribution_numeric(df, 'Work/Study Hours')
 
-"""# Data Preprocessing"""
+"""Grafik menunjukkan bahwa customer dengan depresi memiliki rata-rata jam kerja/belajar lebih tinggi (7,81 jam) dibandingkan yang tidak depresi (6,24 jam). Ini mengindikasikan bahwa semakin banyak jam kerja/belajar, potensi mengalami depresi cenderung meningkat.
+
+# Data Preprocessing
+"""
 
 df_prep = df.copy()
 
-"""## Handle Missing Values"""
+"""Dataset disalin ke dalam variabel `df_prep` untuk melakukan preprocessing, sehingga proses tersebut tidak memengaruhi dataset asli `df`.
+
+## Handle Missing Values
+"""
 
 df_prep.isnull().sum()
+
+"""Pada tahap ini dikarenakan missing value hanya terdapat 3 value pada kolom `Financial Stress` maka kita akan menghapus kolom tersebut. Karena hanya terdapat 3 value pada kolom tersebut maka kita akan menghapus kolom tersebut, dikarenakan agar menjaga keaslian data."""
 
 df_prep = df_prep.dropna()
 
@@ -253,7 +307,10 @@ df_prep.isnull().sum()
 # Handle Duplicate Value
 (f'Jumlah Data Duplikat: {df_prep.duplicated().sum()}')
 
-"""## Handle Outlier Values"""
+"""Saat dilakukan pengecekan, tidak ditemukan data duplikat dalam dataset. Hal ini menunjukkan bahwa setiap entri dalam dataset bersifat unik, sehingga tidak ada data yang berulang yang dapat memengaruhi hasil analisis modeling kedepannya
+
+## Handle Outlier Values
+"""
 
 col_selected = ['Age', 'CGPA']
 
@@ -270,9 +327,20 @@ def remove_outliers(df, columns):
 
 df_prep = remove_outliers(df_prep, col_selected)
 
-"""## Encoding Values"""
+"""Untuk menangani outlier, kali ini akan dilakukan penghapusan outlier pada kolom `Age` dan `CGPA` menggunakan metode IQR. Metode ini digunakan untuk menghilangkan nilai-nilai yang berada di luar batas bawah dan batas atas yang ditentukan, sehingga data menjadi lebih bersih dan representatif.
+
+## Encoding Values
+"""
 
 df_prep.head()
+
+"""Encoding Fitur Kategorikal dilakukan 2 bagian, yakni:
+
+1. *Label Encoding* yaitu, mengonversi nilai kategori menjadi angka integer (`0` dan `1`). Variabel yang akan diproses yakni:  <br>
+    `Gender`, `Have you ever had suicidal thoughts ?`, `Family History of Mental Illness`
+2. *One Hot Ecoding* yaitu mengubah setiap kategori menjadi kolom biner terpisah untuk data tidak terurut. Variabel yang akan diproses yakni: <br>
+    `Sleep Duration`, `Dietary Habits`, `Degree`
+"""
 
 from sklearn.preprocessing import OneHotEncoder, LabelEncoder
 
@@ -289,7 +357,10 @@ df_prep.head()
 
 df_prep.shape
 
-"""## Spliting Data"""
+"""setelah dilakukannya encoding jumlah kolom bertambah menjadi 44 kolom
+
+## Spliting Data
+"""
 
 from sklearn.model_selection import train_test_split
 
@@ -297,6 +368,8 @@ X = df_prep.drop('Depression', axis=1)
 y = df_prep['Depression']
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=.2, random_state=42)
+
+"""Membagi data dengan proporsi 80:20. Dengan 80% digunakan untuk training model dan 20% digunakan untuk testing model."""
 
 print(f'Shape of X_train: {X_train.shape}')
 print(f'Shape of X_test: {X_test.shape}')
@@ -308,7 +381,10 @@ sc = MinMaxScaler()
 X_train = sc.fit_transform(X_train)
 X_test = sc.transform(X_test)
 
-"""## Handle Imbalance Data"""
+"""Melakukan scaling value dengam MinMaxScaler untuk menyamaratakan scalar dari setiap fitur.
+
+## Handle Imbalance Data
+"""
 
 print(f'Number of Depression Before SMOTE: {y_train.value_counts()[1]}')
 print(f'Number of Not Depression Loan Before SMOTE: {y_train.value_counts()[0]}')
@@ -320,7 +396,12 @@ X_train_smt, y_train_smt = smote.fit_resample(X_train, y_train)
 print(f'Number of Depression After SMOTE: {y_train_smt.value_counts()[1]}')
 print(f'Number of Not Depression After SMOTE: {y_train_smt.value_counts()[0]}')
 
-"""# Modeling"""
+"""SMOTE digunakan untuk mengatasi ketidakseimbangan kelas pada data latih. Pengujian juga dilakukan pada data tanpa SMOTE untuk membandingkan akurasi dan menilai efektivitas metode tersebut.
+
+# Model Development
+
+Pada tahap ini dilakukannya pengujian beberapa algoritma klassifikasi diantarannya `Logistic Regression`, `Decision Tree`, `Random Forest`, `Ada Boost`, `SVC`, `KNeighbors Classifier`, `Gaussian NB`, & `XGBoost` untuk mengetahui model mana yang memiliki performa terbaik dalam menangani kasus ini
+"""
 
 from sklearn.linear_model import LogisticRegression
 from sklearn.tree import DecisionTreeClassifier
@@ -331,6 +412,8 @@ from sklearn.naive_bayes import GaussianNB
 from xgboost import XGBClassifier
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, roc_auc_score, confusion_matrix, classification_report
 from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
+
+"""Dibuat sebuah fungsi untuk melatih model menggunakan beberapa algoritma klasifikasi sekaligus, serta mengukur skor performanya pada data training dan data testing. Perbandingan antara kedua skor ini bertujuan untuk mengevaluasi potensi terjadinya overfitting maupun underfitting pada masing-masing model"""
 
 def train_model(X_train, y_train, X_test, y_test):
   # list model
@@ -376,11 +459,16 @@ result = train_model(X_train_smt, y_train_smt, X_test, y_test)
 print('With SMOTE')
 result
 
+"""Setelah dilakukan pengujian pada data yang telah diproses menggunakan SMOTE, diperoleh hasil skor dari beberapa algoritma klasifikasi. Algoritma `Decision Tree` dan `Random Forest` menunjukkan indikasi overfitting, ditandai dengan adanya selisih skor yang cukup besar antara data train dan test. Sementara itu, algoritma lainnya menunjukkan performa yang relatif seimbang. Untuk itu, pengujian lebih lanjut akan difokuskan pada dua algoritma dengan skor terbaik, yaitu `XGBoost` dan `Logistic Regression`"""
+
 result = train_model(X_train, y_train, X_test, y_test)
 print('Without SMOTE')
 result
 
-"""## XGBoost & Hyperparamater Tuning"""
+"""Hasil pengujian tanpa menggunakan SMOTE menunjukkan skor yang sangat mirip dengan hasil pengujian menggunakan SMOTE. Oleh karena itu, pada tahap selanjutnya akan digunakan data tanpa SMOTE untuk menjaga keaslian dan keorisinilan data yang ada.
+
+## XGBoost & Hyperparamater Tuning
+"""
 
 from xgboost import XGBClassifier
 from sklearn.model_selection import RandomizedSearchCV
@@ -590,6 +678,27 @@ for metric in scoring:
     mean_score = np.mean(cv_results[f'test_{metric}'])
     print(f"{metric}: {mean_score:.2f}")
 
+"""# Evaluation
+
+Algoritma yang dipilih sebagai model dalam pembuatan machine learning ini adalah `XGBoost`. Pada tahap evaluasi, metrik yang difokuskan adalah ***F1-score*** dan ***ROC-AUC*** score. Pemilihan *F1-score dilakukan karena metrik ini mampu menangani ketidakseimbangan data dengan menyeimbangkan antara presisi dan recall*, sedangkan *ROC-AUC dipilih untuk mengukur kemampuan model dalam membedakan kelas secara keseluruhan, terutama pada kasus klasifikasi biner seperti ini*.
+"""
+
+y_pred_test = model_tuning_LR.predict(X_test)
+f1_test = round(f1_score(y_test, y_pred_test),2)
+roc_test = round(roc_auc_score(y_test, y_pred_test),2)
+resume = classification_report(y_test, y_pred_test, target_names=['Not Depression', 'Depression'])
+
+print(f'F1-Score: {f1_test}')
+print(f'ROC-AUC Score: {roc_test}')
+print(f'Classification Report:\n{resume}')
+
+cm = confusion_matrix(y_test, y_pred_test)
+plt.figure(figsize=(8, 6))
+sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', cbar=False)
+plt.title('Confusion Matrix Logistic Regression (Tuning)')
+plt.xlabel('Predicted')
+plt.ylabel('Actual')
+
 """# Feature Importance"""
 
 import shap
@@ -601,3 +710,21 @@ shap_values = explainer(X_test)
 # Visualize feature importance
 shap.summary_plot(shap_values, X_test, plot_type="bar", feature_names=X.columns, max_display=7)
 shap.summary_plot(shap_values, X_test, feature_names=X.columns, max_display=7)
+
+"""**Rekomendasi Strategis:**
+
+- Pikiran Bunuh Diri
+Buat sistem deteksi dini dan layanan konseling prioritas.
+- Tekanan Akademik
+Evaluasi beban studi & adakan pelatihan manajemen stres.
+- Stres Finansial
+Tawarkan beasiswa, konseling keuangan, dan kerja paruh waktu.
+- Usia Muda (Remaja Awal)
+Fokus intervensi pada mahasiswa baru dan usia 18–21 tahun.
+- Jam Belajar/Bekerja Tinggi
+Atur beban studi agar seimbang, dorong waktu istirahat.
+- Pola Hidup Tidak Sehat
+Menjaga pola hidup sehat dengan mengadakan kegiatan olahraga ditiap minggunya.
+- Kepuasan Studi
+Tingkatkan kualitas pembelajaran & perhatikan feedback mahasiswa.
+"""
