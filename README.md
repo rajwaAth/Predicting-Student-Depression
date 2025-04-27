@@ -72,6 +72,7 @@ Dari hasil analisis awal deskripsi data, ditemukan bahwa kolom `id` hanya berisi
 <br>
 <image src='image/distribusi_target.png' width= 500/>
 <br>
+
 Distribusi pada data target (Depression) sedikit **imbalance** (tidak seimbang), yang mungkin dapat menyebabkan model cenderung memprediksi kelas mayoritas. Oleh karena itu, untuk mengantisipasi permasalahan ini, akan dilakukan percobaan menggunakan teknik **oversampling** pada **data train** (*setelah proses pembagian data menjadi data latih dan data uji*).
 
 #### Analisis Univariat
