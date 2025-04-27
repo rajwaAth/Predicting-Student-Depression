@@ -31,7 +31,7 @@ Meningkatnya prevalensi depresi pada pelajar menuntut adanya solusi berbasis tek
 
 1. Melakukan Exploratory Data Analysis (EDA) untuk memahami pola belajar, kebiasaan istirahat, gaya hidup, dan pengalaman siswa yang berkaitan dengan risiko depresi
 2. Menerapkan dan membandingkan beberapa algoritma klasifikasi seperti `Logistic Regression`, `Decision Tree`, dan `XGBoost` untuk menemukan model prediktif terbaik
-3. Mengevaluasi performa setiap model menggunakan metrik **F1-Score** dan **ROC AUC** guna memilih model yang paling seimbang antara precision dan recall
+3. Mengevaluasi performa setiap model menggunakan metrik **F1-Score** guna memilih model yang paling seimbang antara precision dan recall
 
 ## Data Understanding
 
