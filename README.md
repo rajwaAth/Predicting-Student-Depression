@@ -65,34 +65,34 @@ Dataset yang digunakan merupakan kumpulan data terkait kondisi kesehatan mental 
 | 17 | `Family History of Mental Illness` | Riwayat keluarga dengan gangguan mental (`Yes` atau `No`) |
 | 18 | `Depression` | Variabel target: status depresi (`1` = Ya, `0` = Tidak) |
 
-Dari hasil analisis awal deskripsi data, ditemukan bahwa kolom `id` hanya berisi nilai unik untuk setiap pelanggan dan **tidak memberikan kontribusi prediktif**, sehingga kolom ini akan **dihapus dari analisis**. Selain itu terdapat pula kolom `Financial Stress` yang bertipe data **object** yang seharusnya bertipe data **float**, sehingga perlu dilakukan konversi tipe data sebelum analisis lebih lanjut.
+Dari hasil analisis awal deskripsi data, ditemukan bahwa kolom `id` hanya berisi nilai unik untuk setiap pelanggan dan **tidak memberikan kontribusi prediktif**, sehingga kolom ini nantinya akan **dihapus** kerena tidak dibutuhkan untuk analisis lebih lanjut. Selain itu terdapat pula kolom `Financial Stress` yang bertipe data **object** yang seharusnya bertipe data **float**, sehingga perlu dilakukan konversi tipe data pada tahap selanjutnya.
 
-### Exploratory Data Analysis
+### Distribusi Data Target (Depression)
 
-#### Analisis Univariat
-
-**1. Distribusi Data Target (Depression)**
 <br>
 <image src='image/distribusi_target.png' width= 500/>
 <br>
 Distribusi pada data target (Depression) sedikit **imbalance** (tidak seimbang), yang mungkin dapat menyebabkan model cenderung memprediksi kelas mayoritas. Oleh karena itu, untuk mengantisipasi permasalahan ini, akan dilakukan percobaan menggunakan teknik **oversampling** pada **data train** (*setelah proses pembagian data menjadi data latih dan data uji*).
 
-**2. Distribusi Data Kategorikal**
+#### Analisis Univariat
+
+**1. Distribusi Data Kategorikal**
 <br>
 <image src='image/distribusi_data_kategorik.png' width= 500/>
 <br>
+
 Berdasarkan distribusi nilai pada kolom-kolom kategorikal, ditemukan bahwa kolom `City` dan `Profession` memiliki beberapa kategori dengan jumlah data yang sangat sedikit (dominan pada satu kategori saja). Selain itu, kolom City juga memiliki terlalu banyak kategori, yang ***dapat menyebabkan curse of dimensionality***. Oleh karena itu, kedua kolom tersebut akan dihapus dari dataset.
 
 Selain itu, pada kolom `Sleep Duration`, `Dietary Habits`, dan `Degree`, terdapat kategori bernilai "Others" yang tidak merepresentasikan informasi yang jelas serta jumlahnya sangat sedikit. Maka dari itu, baris data yang memiliki nilai "Others" pada fitur-fitur tersebut akan dihapus dari dataset.
 
-**3. Distribusi Data Numerik**
+**2. Distribusi Data Numerik**
 <br>
 <image src='image/distribusi_data_numerik.png' width= 500/>
 <image src='image/boxplot_data_numerik.png' width= 500/>
 <br> 
 Kolom `Work Pressure` dan `Job Satisfaction` juga menunjukkan dominasi pada satu nilai tertentu, sehingga tidak memberikan variasi yang signifikan untuk analisis. Oleh karena itu, kedua kolom tersebut akan dihapus dari dataset.
 
-Sementara itu, kolom `Age` dan `CGPA` teridentifikasi memiliki nilai outlier yang dapat memengaruhi hasil analisis. Outlier pada kedua kolom tersebut akan dihapus pada tahap praproses selanjutnya.
+Sementara itu, kolom `Age` dan `CGPA` teridentifikasi **memiliki nilai outlier** yang dapat memengaruhi hasil analisis. Outlier pada kedua kolom tersebut akan dihapus pada tahap praproses selanjutnya.
 
 #### Analisis Multivariat
 
@@ -130,17 +130,25 @@ Responden dengan depresi memiliki rata-rata jam kerja/belajar lebih tinggi (7,81
 
 Pada tahap ini dilakukan proses transformasi pada data sehingga menjadi bentuk yang cocok untuk proses pemodelan. Beberapa tahap persiapan data yang dilakukan adalah:
 
-### 1. Menangani Missing Values
+### 1. Menghapus Kolom & Kategori Values yang Tidak Penting
+
+Pertama akan dilakukakn penghapusan pada kolom - kolom yang tidak akan digunakan lebih lanjut seperti kolom `Id`, `City`, `Profession`, `Job Satisfaction`, `Work Pressure` dan juga mengubah kategori nilai pada kolom `Financial Stress` yang bertipe data **object** menjadi **float**. dan tidak lupa untuk menghapus baris data yang memiliki nilai "Others" pada kolom `Sleep Duration`, `Dietary Habits`, dan `Degree` karana nilai "Others" tidak merepresentasikan informasi yang jelas.
+<br>
+<image src='image/menghapus_kolom_id.png' width= 500/>
+<image src='image/mengubah_kategori_nilai.png' width= 500/>
+<br> 
+
+### 2. Menangani Missing Values
 
 Pada dataset terdapat missing value pada kolom `Financial Stress` sebanyak 3 data. Dikarenakan jumlahnya yang sedikit dan untuk menjaga keaslian data, maka diputuskan untuk menghapus baris-baris tersebut dari dataset.
 <img src='image/null_value.png' align="center"><br>
 
-### 2. Menghapus Outlier Values
+### 3. Menghapus Outlier Values
 
 Untuk menangani outlier, dilakukan penghapusan outlier pada kolom `Age` dan `CGPA` menggunakan metode IQR (Interquartile Range). Metode ini digunakan untuk menghilangkan nilai-nilai yang berada di luar batas bawah dan batas atas yang ditentukan, sehingga data menjadi lebih bersih dan representatif.
 <img src='image/outlier.png' align="center"><br>
 
-### 3. Encoding Fitur Kategori
+### 4. Encoding Fitur Kategori
 
 Pada bagian ini, dilakukan transformasi data kategori (yang berbentuk teks atau label) menjadi format numerik agar dapat diproses oleh algoritma machine learning. Encoding fitur kategorikal dilakukan dalam 2 bagian:
 
@@ -156,164 +164,81 @@ Pada bagian ini, dilakukan transformasi data kategori (yang berbentuk teks atau 
 
 <img src="image/encoding.png" align="center"><br>
 
-### 4. Train-Test-Split
+### 5. Train-Test-Split
 
 Data dibagi dengan proporsi 80:20, dimana 80% digunakan untuk training model dan 20% digunakan untuk testing model, untuk memastikan evaluasi yang objektif terhadap performa model.
 <img src="image/spliting_data.png" align="center"><br>
 
-### 5. Transformasi Fitur
+### 6. Transformasi Values
 
 Dilakukan scaling value dengan MinMaxScaler untuk menyamaratakan skala dari setiap fitur, sehingga tidak ada fitur yang mendominasi karena memiliki skala nilai yang lebih besar.
-<img src="image/transformation_data.png" align="center"><br>
+<img src="image/transformation_value.png" align="center"><br>
 
-### 6. Menangani Data Imbalance
+### 7. Menangani Data Imbalance
 
 SMOTE (Synthetic Minority Over-sampling Technique) digunakan untuk mengatasi ketidakseimbangan kelas pada data latih. Pengujian juga dilakukan pada data tanpa SMOTE untuk membandingkan akurasi dan menilai efektivitas metode tersebut.
 <img src="image/imbalance_data.png" align="center"><br>
 
 ## Modeling
 
-Pada tahap awal dilakukan pengujian untuk mencari algoritma terbaik tanpa melakukan hyperparameter tuning terlebih dahulu. Pengujian dilakukan pada data dengan SMOTE dan tanpa SMOTE.
+Pada project kali ini akan dilakukan percobaan terhadap beberapa algoritma machine learning yaitu:
 
-<img src="image/modeling_smote.png" align="center"><br>
-<img src="image/modeling_not_smote.png" align="center"><br>
+### 1. Logistic Regression
+Logistic Regression adalah algoritma machine learning yang digunakan untuk klasifikasi, terutama klasifikasi biner. Algoritma ini memodelkan probabilitas suatu data masuk ke kelas tertentu menggunakan fungsi logistik (sigmoid). Logistic Regression mencoba menemukan garis pemisah (decision boundary) linear antara kelas.
+**Kelebihan:**
+* Sederhana dan cepat untuk dilatih.
+* Mudah diinterpretasikan melalui nilai koefisien fitur.
+* Cocok untuk kasus klasifikasi biner.
 
-Dari hasil pengujian, ditemukan bahwa model dengan SMOTE dan tanpa SMOTE memiliki akurasi yang hampir sama. Oleh karena itu, diputuskan untuk menggunakan model tanpa SMOTE karena data yang digunakan lebih orisinal dan merepresentasikan kondisi sebenarnya. 
+**Kekurangan:**
+* Sensitif terhadap multikolinearitas.
+* Kurang efektif jika banyak outlier.
 
-Berdasarkan hasil evaluasi awal, fokus dilakukan pada 2 model algoritma dengan performa terbaik, yaitu:
-1. Logistic Regression (F1 score 0.87)
-2. XGBoost (F1 score 0.86)
+### 2. Decision Tree
+Decision Tree adalah algoritma klasifikasi yang bekerja dengan membagi dataset berdasarkan fitur menjadi cabang-cabang seperti struktur pohon. Setiap node dalam pohon mewakili fitur, dan setiap daun mewakili kelas. Algoritma ini menggunakan pemisahan berdasarkan kriteria tertentu (seperti Gini atau Entropy) untuk membuat keputusan.
 
-### 1. XGBoost dengan Hyperparameter Tuning & Cross Validation
+**Kelebihan:**
+* Bisa menangani data numerik dan kategorikal.
+* Tidak memerlukan normalisasi atau scaling data.
+* Dapat menangkap hubungan non-linear antara fitur.
 
-XGBoost (Extreme Gradient Boosting) adalah algoritma pembelajaran ensemble yang populer untuk tugas klasifikasi dan regresi. XGBoost bekerja dengan membangun model secara bertahap menggunakan pendekatan boosting, di mana setiap model baru berusaha untuk memperbaiki kesalahan dari model sebelumnya.
+**Kekurangan:**
+* Rentan terhadap overfitting, terutama pada data kompleks.
+* Sensitif terhadap perubahan kecil pada data.
+* Bisa membuat model yang terlalu dalam atau kompleks.
 
-**Kelebihan XGBoost:**
-- Performa tinggi pada berbagai jenis data
-- Penanganan otomatis terhadap missing values
-- Kemampuan menangani fitur numerik dan kategorikal
-- Regularisasi bawaan untuk mencegah overfitting
-- Implementasi paralel untuk komputasi lebih cepat
+### 3. XGBoost
+XGBoost adalah algoritma boosting yang sangat efisien dan akurat. Algoritma ini bekerja dengan membangun banyak pohon keputusan secara bertahap, di mana setiap pohon mencoba memperbaiki kesalahan dari pohon sebelumnya. XGBoost dilengkapi dengan teknik regularisasi dan optimisasi untuk mencegah overfitting dan meningkatkan performa.
 
-**Kekurangan XGBoost:**
-- Membutuhkan tuning hyperparameter yang hati-hati
-- Lebih kompleks dan sulit diinterpretasi dibandingkan model tradisional
-- Memerlukan lebih banyak sumber daya komputasi
+**Kelebihan:**
+* Mampu menangani missing value secara otomatis.
+* Dilengkapi dengan regularisasi untuk menghindari overfitting.
+* Cepat dalam pelatihan dan prediksi.
 
-Untuk mendapatkan performa terbaik, dilakukan proses **hyperparameter tuning**, dan diperoleh parameter terbaik sebagai berikut:
-
-**Best parameters XGBoost:**
-- `subsample = 0.8`
-- `reg_lambda = 2`
-- `reg_alpha = 1`
-- `n_estimators = 300`
-- `max_depth = 3`
-- `learning_rate = 0.1`
-- `gamma = 5`
-- `colsample_bytree = 0.6`
-
-Hasil validasi menggunakan cross-validation dengan 5 fold menunjukkan:
-- `accuracy`: 0.85
-- `precision`: 0.86
-- `recall`: 0.89
-- `f1`: 0.87
-- `roc_auc`: 0.92
-
-### 2. Logistic Regression dengan Hyperparameter Tuning & Cross Validation
-
-Logistic Regression adalah algoritma pembelajaran klasik yang masih efektif untuk tugas klasifikasi. Meskipun sederhana, Logistic Regression mampu memberikan hasil yang kompetitif, terutama pada data yang bersifat linier.
-
-**Kelebihan Logistic Regression:**
-- Mudah diimplementasikan dan diinterpretasi
-- Efisien secara komputasional
-- Memberikan probabilitas yang terkalibrasi dengan baik
-- Bekerja baik dengan data berukuran besar dan fitur yang banyak
-
-**Kekurangan Logistic Regression:**
-- Kurang bisa menangkap relasi non-linear antar fitur
-- Asumsi independensi antar fitur
-- Sensitif terhadap outlier
-
-Untuk optimalisasi model, dilakukan hyperparameter tuning dengan GridSearchCV, dan diperoleh parameter terbaik sebagai berikut:
-
-**Best parameters Logistic Regression:**
-- `solver = 'saga'`
-- `penalty = 'elasticnet'`
-- `l1_ratio = 0.9`
-- `C = 0.1`
-- `max_iter = 1000`
-
-Hasil validasi menggunakan cross-validation dengan 5 fold menunjukkan:
-- `accuracy`: 0.85
-- `precision`: 0.85
-- `recall`: 0.89
-- `f1`: 0.87
-- `roc_auc`: 0.92
-
-### Pemilihan Model Terbaik
-
-Dari kedua model yang telah dioptimalkan, **XGBoost** dipilih sebagai model terbaik dengan performa sebagai berikut (hasil validasi menggunakan cross-validation dengan 5 fold):
-- `accuracy`: 0.85
-- `precision`: 0.86
-- `recall`: 0.89
-- `f1`: 0.87
-- `roc_auc`: 0.92
-
-XGBoost dipilih karena:
-1. Kemampuan lebih baik dalam menangkap pola kompleks dan interaksi antar fitur
-2. Lebih robust terhadap variasi data dan noise
-3. Memiliki performa yang konsisten pada validasi silang
+**Kekurangan:**
+* Lebih kompleks dan sulit untuk dipahami secara menyeluruh.
+* Membutuhkan waktu tuning hyperparameter yang tidak sedikit.
+* Mengonsumsi memori dan waktu lebih banyak dibanding model sederhana.
 
 ## Evaluation
 
-Untuk mengevaluasi kinerja model dalam mendeteksi risiko depresi pada mahasiswa, digunakan dua metrik utama, yaitu **F1 Score** dan **ROC AUC**. Pemilihan metrik ini disesuaikan dengan konteks permasalahan yang bersifat kelas tidak seimbang dan memiliki dampak serius jika terjadi kesalahan klasifikasi.
-
-<img src="image/evaluation.png" align="center"><br>
+Untuk mengevaluasi kinerja model dalam mendeteksi risiko depresi pada mahasiswa, digunakan metrik **F1 Score**. Pemilihan metrik ini didasarkan pada karakteristik masalah yang memiliki distribusi kelas tidak seimbang dan dampak serius apabila terjadi kesalahan klasifikasi.
 
 ### F1 Score
 
-F1 Score merupakan metrik yang menggabungkan **Precision** dan **Recall** dalam satu nilai harmonis, dengan formula:
+**F1 Score** merupakan metrik yang menggabungkan **Precision** dan **Recall** dalam satu nilai harmonis, dengan rumus:
 
-F1 = 2 × (Precision × Recall) / (Precision + Recall)
+<img src="image/f1score_image.png" align="center"><br>
 
-dimana:
-- **Precision**: Persentase prediksi positif yang benar-benar positif. Precision = TP / (TP + FP)
-- **Recall**: Persentase kasus positif yang berhasil diprediksi sebagai positif. Recall = TP / (TP + FN)
+di mana:
+- **Precision**: Persentase prediksi positif yang benar-benar positif.  
+<img src="image/precision_formulas.png" align="center"><br>
+- **Recall**: Persentase kasus positif yang berhasil diprediksi sebagai positif.  
+<img src="image/recall_formulas.png" align="center"><br>
 
-F1 Score sangat cocok digunakan ketika keseimbangan antara False Positive dan False Negative penting untuk dipertahankan, seperti dalam kasus prediksi depresi. Nilai F1 Score sebesar **0.87** menunjukkan bahwa model mampu menjaga keseimbangan yang baik antara presisi dalam mendeteksi depresi dan sensitivitas dalam menjangkau kasus yang benar-benar positif.
+Penggunaan F1 Score sangat sesuai untuk situasi di mana keseimbangan antara **False Positive** dan **False Negative** penting untuk dipertahankan, seperti dalam kasus deteksi risiko depresi pada mahasiswa. Berdasarkan hasil evaluasi, model **Logistic Regression** memperoleh nilai F1 Score tertinggi sebesar **0,87**, menunjukkan bahwa model ini mampu menjaga keseimbangan terbaik antara ketepatan dalam mendeteksi depresi dan kepekaan dalam menjangkau kasus positif dibandingkan model lainnya.
 
-### ROC AUC (Receiver Operating Characteristic - Area Under Curve)
-
-ROC AUC mengukur kemampuan model dalam membedakan antara kelas positif (depresi) dan negatif (tidak depresi) di berbagai ambang batas prediksi. Nilai AUC berkisar antara 0 hingga 1.
-
-Dengan skor **ROC AUC sebesar 0.84**, model XGBoost menunjukkan kinerja yang sangat baik dalam membedakan mahasiswa yang mengalami gejala depresi dan yang tidak.
-
-Berdasarkan hasil confusion matrix, model XGBoost menunjukkan kemampuan yang baik dalam mengidentifikasi kasus depresi (recall tinggi), yang sangat penting dalam konteks kesehatan mental di mana melewatkan kasus positif (false negative) bisa berdampak serius.
-
-### Feature Importance & Business Insight
-
-Analisis feature importance dari model XGBoost menunjukkan beberapa faktor kunci yang berpengaruh terhadap depresi di kalangan pelajar:
-
-<img src="image/feature_importance.png" align="center"><br>
-
-1. **Pikiran Bunuh Diri** - Menjadi faktor paling berpengaruh dan perlu menjadi indikator prioritas intervensi
-2. **Tekanan Akademik & Stres Finansial** - Pemicu kuat gangguan mental
-3. **Jam Belajar/Bekerja Berlebihan** - Terkait dengan peningkatan risiko stres dan burnout
-4. **Pola Makan Tidak Sehat** - Berkontribusi negatif terhadap kesehatan mental
-5. **Kepuasan Studi Tinggi** - Faktor yang menurunkan risiko depresi
-6. **Usia Muda** - Kelompok yang lebih rentan mengalami gangguan emosional
-
-Berdasarkan temuan ini, beberapa rekomendasi strategis yang dapat diberikan kepada institusi pendidikan meliputi:
-
-- Membangun sistem deteksi dini dan layanan konseling prioritas untuk mengidentifikasi pikiran bunuh diri
-- Evaluasi beban studi dan penyelenggaraan pelatihan manajemen stres untuk mengurangi tekanan akademik
-- Penawaran beasiswa, konseling keuangan, dan program kerja paruh waktu untuk memitigasi stres finansial
-- Fokus intervensi pada mahasiswa baru dan kelompok usia 18-21 tahun
-- Pengaturan beban studi yang seimbang dan promosi waktu istirahat yang cukup
-- Program promosi pola hidup sehat dengan kegiatan olahraga rutin
-- Peningkatan kualitas pembelajaran dan perhatian terhadap feedback mahasiswa
-
-Model prediktif yang dikembangkan terbukti efektif dalam mengidentifikasi risiko depresi secara akurat dan andal, sehingga dapat mendukung upaya deteksi dini gangguan mental pada kalangan pelajar dan memungkinkan intervensi yang lebih cepat dan tepat sasaran.
+<img src="image/perbandingan_score.png" align="center"><br>
 
 ## Referensi
 1. World Health Organization. (2020). Depression. Retrieved from: https://www.who.int/news-room/fact-sheets/detail/depression
